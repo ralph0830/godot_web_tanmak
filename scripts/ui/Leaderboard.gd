@@ -15,13 +15,14 @@ func _ready() -> void:
 func _build_rows() -> void:
 	for i in GameConfig.LEADERBOARD_SIZE:
 		var row := Label.new()
-		row.add_theme_font_size_override("font_size", 26)
+		row.add_theme_font_size_override("font_size", 38)
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		row.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		row.set_anchors_preset(Control.PRESET_FULL_RECT)
-		var top: float = 260.0 + i * 42.0
+		# 10행을 상단(200px)부터 하단까지 넓은 간격으로 골고루 배치
+		var top: float = 200.0 + i * 64.0
 		row.offset_top = top
-		row.offset_bottom = top + 38.0
+		row.offset_bottom = top + 54.0
 		add_child(row)
 		_row_labels.append(row)
 
