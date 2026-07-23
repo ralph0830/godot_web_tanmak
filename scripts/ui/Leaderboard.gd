@@ -15,20 +15,20 @@ func _ready() -> void:
 func _build_rows() -> void:
 	for i in GameConfig.LEADERBOARD_SIZE:
 		var row := Label.new()
-		row.add_theme_font_size_override("font_size", 38)
+		row.add_theme_font_size_override("font_size", 40)
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		row.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		# 가로 전체 / 세로는 top 기준 절대 위치 (FULL_RECT 쓰면 bottom anchor 로 행이 늘어남)
+		# 가로 전체(좌우 outer margin 24px) / 세로는 top 기준 절대 위치
 		row.anchor_left = 0.0
 		row.anchor_top = 0.0
 		row.anchor_right = 1.0
 		row.anchor_bottom = 0.0
-		row.offset_left = 0.0
-		row.offset_right = 0.0
-		# 10행을 TANMAK 타이틀 아래(200px)부터 넓은 간격으로 배치
-		var top: float = 200.0 + i * 64.0
+		row.offset_left = 24.0
+		row.offset_right = -24.0
+		# 10행을 헤더 아래(130px)부터 76px 간격으로 균형 배치
+		var top: float = 130.0 + i * 76.0
 		row.offset_top = top
-		row.offset_bottom = top + 54.0
+		row.offset_bottom = top + 60.0
 		add_child(row)
 		_row_labels.append(row)
 

@@ -40,20 +40,20 @@ func set_clients(client, board) -> void:
 
 
 func _build() -> void:
-	_title_label = _make_label("TANMAK", 72, Color(0.345, 0.651, 1.0), 0.05)
-	_subtitle_label = _make_label("TAP TO START", 34, Color(0.9, 0.9, 0.9), 0.93)
-	_gameover_label = _make_label("GAME OVER", 56, Color(1.0, 0.32, 0.32), 0.05)
+	_title_label = _make_label("TANMAK", 72, Color(0.345, 0.651, 1.0), 0.025)
+	_subtitle_label = _make_label("TAP TO START", 34, Color(0.9, 0.9, 0.9), 0.94)
+	_gameover_label = _make_label("GAME OVER", 56, Color(1.0, 0.32, 0.32), 0.025)
 	_gameover_label.visible = false
-	_score_label = _make_label("", 30, Color(0.9, 0.9, 0.9), 0.11)
+	_score_label = _make_label("", 30, Color(0.9, 0.9, 0.9), 0.065)
 	_score_label.visible = false
-	_congrats_label = _make_label("", 28, Color(1.0, 0.84, 0.0), 0.68)
+	_congrats_label = _make_label("", 28, Color(1.0, 0.84, 0.0), 0.70)
 	_congrats_label.visible = false
 	_name_input = LineEdit.new()
 	_name_input.max_length = GameConfig.NAME_LENGTH
 	_name_input.placeholder_text = "3 letters"
 	_name_input.add_theme_font_size_override("font_size", 28)
 	_name_input.size = Vector2(260, 52)
-	_name_input.position = Vector2((GameConfig.VIEWPORT_WIDTH - 260) / 2.0, 0.76 * GameConfig.VIEWPORT_HEIGHT)
+	_name_input.position = Vector2((GameConfig.VIEWPORT_WIDTH - 260) / 2.0, 0.77 * GameConfig.VIEWPORT_HEIGHT)
 	_name_input.visible = false
 	_name_input.text_submitted.connect(_on_name_submitted)
 	add_child(_name_input)
@@ -61,7 +61,7 @@ func _build() -> void:
 	_submit_button.text = "SUBMIT"
 	_submit_button.add_theme_font_size_override("font_size", 26)
 	_submit_button.size = Vector2(160, 52)
-	_submit_button.position = Vector2((GameConfig.VIEWPORT_WIDTH - 160) / 2.0, 0.84 * GameConfig.VIEWPORT_HEIGHT)
+	_submit_button.position = Vector2((GameConfig.VIEWPORT_WIDTH - 160) / 2.0, 0.85 * GameConfig.VIEWPORT_HEIGHT)
 	_submit_button.visible = false
 	_submit_button.pressed.connect(_on_submit_pressed)
 	add_child(_submit_button)

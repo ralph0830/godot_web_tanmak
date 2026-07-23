@@ -83,7 +83,7 @@ if 'tanmak-name' not in h:
     inj = (
         '<input id="tanmak-name" type="text" maxlength="3" autocomplete="off" '
         'autocapitalize="off" spellcheck="false" inputmode="text" '
-        'style="position:fixed;left:50%;top:62%;transform:translateX(-50%);width:240px;'
+        'style="position:fixed;left:50%;top:76%;transform:translateX(-50%);width:240px;'
         'height:56px;font-size:30px;text-align:center;background:#1a2030;color:#fff;'
         'border:2px solid #58a6ff;border-radius:10px;display:none;z-index:50;" '
         "onkeydown=\"if(event.key==='Enter'){window._tanmakNameSubmitted=this.value;}\">"
