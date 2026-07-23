@@ -46,11 +46,11 @@ const SCATTER_FRAGMENT_SPEED := 320.0    # 분사 파편 속도
 # ============================================================
 # WAVE / 난이도 곡선
 # ============================================================
-const WAVE_DURATION := 20.0           # 웨이브 지속 시간(초)
+const WAVE_DURATION := 10.0           # 웨이브 지속 시간(초) — 짧게 해 난이도 상승을 빠르게
 const BOSS_WAVE_INTERVAL := 5         # 5의 배수 웨이브 = 보스전
 const DIFFICULTY_BASE := 1.0          # 시작 난이도 배수
 const DIFFICULTY_GROWTH := 0.13       # 웨이브당 난이도 선형 증가율
-const SPAWN_INTERVAL_BASE := 0.95     # 필드 스폰 주기 시작값(초) — 작을수록 빈번
+const SPAWN_INTERVAL_BASE := 0.65     # 필드 스폰 주기 시작값(초) — 작을수록 빈번(초반 밀도)
 const MAX_DIFFICULTY := 4.0           # 난이도 상한 (무한 증가 방지)
 
 # ============================================================

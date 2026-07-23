@@ -34,11 +34,13 @@ func set_clients(client, board) -> void:
 		score_client.scores_received.connect(_on_scores_received)
 		score_client.submitted.connect(_on_submitted)
 		score_client.request_failed.connect(_on_request_failed)
+		# 초기 타이틀 화면 순위 로드
+		score_client.fetch_scores()
 
 
 func _build() -> void:
-	_title_label = _make_label("TANMAK", 80, Color(0.345, 0.651, 1.0), 0.30)
-	_subtitle_label = _make_label("TAP TO START", 30, Color(0.9, 0.9, 0.9), 0.94)
+	_title_label = _make_label("TANMAK", 72, Color(0.345, 0.651, 1.0), 0.05)
+	_subtitle_label = _make_label("TAP TO START", 34, Color(0.9, 0.9, 0.9), 0.93)
 	_gameover_label = _make_label("GAME OVER", 56, Color(1.0, 0.32, 0.32), 0.05)
 	_gameover_label.visible = false
 	_score_label = _make_label("", 30, Color(0.9, 0.9, 0.9), 0.11)
@@ -86,8 +88,7 @@ func show_menu() -> void:
 	_score_label.visible = false
 	_congrats_label.visible = false
 	_hide_name_input()
-	if leaderboard:
-		leaderboard.hide_board()
+	# 순위표는 set_clients() 의 fetch 결과로 표시됨 (여기서 숨기지 않음)
 
 
 func show_game_over(final_score: int) -> void:
@@ -111,6 +112,9 @@ func show_game_over(final_score: int) -> void:
 func _on_scores_received(scores: Array) -> void:
 	if leaderboard:
 		leaderboard.display(scores)
+	# 타이틀(메뉴) 상태에서는 순위 표시만 하고 갱신 판단/축하는 생략
+	if GameManager.current_state != GameManager.State.GAME_OVER:
+		return
 	_rank_to_submit = _compute_rank(scores, _final_score)
 	if _rank_to_submit >= 1 and _rank_to_submit <= GameConfig.LEADERBOARD_SIZE:
 		_show_congrats(_rank_to_submit)
@@ -169,8 +173,10 @@ func _on_submitted(rank: int, scores: Array) -> void:
 func _on_request_failed(reason: String) -> void:
 	_hide_name_input()
 	_congrats_label.visible = false
-	_subtitle_label.text = "Load failed — tap to restart"
-	if leaderboard:
+	# 메뉴 상태가 아니면(게임오버) 안내 문구 변경
+	if GameManager.current_state == GameManager.State.GAME_OVER:
+		_subtitle_label.text = "Load failed — tap to restart"
+	if leaderboard and GameManager.current_state == GameManager.State.GAME_OVER:
 		leaderboard.hide_board()
 
 
