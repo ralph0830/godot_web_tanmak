@@ -1,0 +1,9 @@
+<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg">
+  <rect width="128" height="128" rx="20" fill="#0d1117"/>
+  <!-- 플레이어(삼각형) -->
+  <polygon points="64,40 50,78 78,78" fill="#58a6ff" stroke="#1f6feb" stroke-width="3"/>
+  <!-- 탄막(원형) -->
+  <circle cx="40" cy="100" r="7" fill="#ff7b72"/>
+  <circle cx="88" cy="100" r="7" fill="#ff7b72"/>
+  <circle cx="64" cy="108" r="9" fill="#ffa657"/>
+</svg>

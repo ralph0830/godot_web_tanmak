@@ -1,0 +1,2 @@
+# 이 폴더는 Godot 웹 내보내기 산출물(index.html, index.wasm, index.pck, *.br)의 출력 위치입니다.
+# 빌드 결과물은 .gitignore 로 추적 제외됩니다. deploy.sh 실행 시 자동 채워집니다.

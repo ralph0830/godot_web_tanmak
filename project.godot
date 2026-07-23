@@ -1,0 +1,54 @@
+; TANMAK — Godot 웹 탄막 회피 슈팅 게임 프로젝트 설정
+; Godot 4.7 / 웹(WebGL2) 타겟
+config_version=5
+
+[application]
+
+config/name="TANMAK"
+config/description="웹 브라우저용 탄막 회피 슈팅 게임"
+run/main_scene="res://scenes/Main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+; 전역 싱글톤(Autoload). '*' 접두사 = 자동 인스턴스화.
+; EventBus: 시그널 버스(모든 노드 간 결합도 최소화)
+EventBus="*res://scripts/core/EventBus.gd"
+; GameManager: 게임 상태/점수/생명(1HP)
+GameManager="*res://scripts/core/GameManager.gd"
+; WaveManager: WAVE 진행 + 절차적 난이도 스케일링
+WaveManager="*res://scripts/core/WaveManager.gd"
+; BulletPool: 탄막 객체 풀링(웹 성능 핵심)
+BulletPool="*res://scripts/core/BulletPool.gd"
+
+[display]
+
+; 모바일 세로 화면 기준 (데스크탑에서는 비율 유지하며 확장)
+window/size/viewport_width=720
+window/size/viewport_height=1280
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
+[input_devices]
+
+; 터치↔마우스 상호 에뮬레이션 (가상 조이스틱이 두 입력을 모두 처리)
+pointing/emulate_mouse_from_touch=true
+pointing/emulate_touch_from_mouse=true
+
+[input]
+
+; 게임오버 후 재시작 (데스크탑: R키 / 모바일: 화면 탭)
+restart={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":82,"key_label":0,"unicode":114,"location":0,"echo":false,"script":null)
+]
+}
+
+[rendering]
+
+; 웹(WebGL2) 호환성 극대화를 위해 GL Compatibility 렌더러 사용
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+; 2D 탄막은 픽셀 단위 정밀도보다 부드러움이 중요 → 선형 필터
+textures/canvas_textures/default_texture_filter=1
