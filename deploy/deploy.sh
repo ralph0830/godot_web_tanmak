@@ -30,6 +30,7 @@ fi
 : "${WEB_PORT:=2713}"
 : "${GODOT_EXPORT_PRESET:=Web}"
 : "${GODOT_EXPORT_OUTPUT:=web/index.html}"
+: "${DEPLOY_DOMAIN:=}"
 
 # --- Godot 실행 파일 탐지 ---
 GODOT="${GODOT_BIN:-}"
@@ -78,12 +79,17 @@ else
 	scp -P "${DEPLOY_PORT}" ${DEPLOY_SSH_KEY:+-i "${DEPLOY_SSH_KEY}"} "${PROJECT_DIR}"/web/* "${DEPLOY_USER}@${DEPLOY_HOST}:${WEB_ROOT}/"
 fi
 
-echo "==> 3/3 헬스체크 (http://${DEPLOY_HOST}:${WEB_PORT}/)"
+echo "==> 3/3 헬스체크"
+HEALTH_URL="${DEPLOY_DOMAIN:+https://${DEPLOY_DOMAIN}/}"
+if [ -z "${HEALTH_URL}" ]; then
+	HEALTH_URL="http://${DEPLOY_HOST}:${WEB_PORT}/"
+fi
+echo "   대상: ${HEALTH_URL}"
 sleep 1
-if curl -sS -o /dev/null -w "   HTTP %{http_code}\n" --max-time 10 "http://${DEPLOY_HOST}:${WEB_PORT}/"; then
+if curl -sS -o /dev/null -w "   HTTP %{http_code}\n" --max-time 10 "${HEALTH_URL}"; then
 	:
 else
-	echo "   ⚠ 헬스체크 실패 — NPM Proxy Host / 포트 2713 방화벽 / nginx 실행 여부 확인"
+	echo "   ⚠ 헬스체크 실패 — NPM 역프록시 / 포트 2713 / nginx 상태 확인"
 fi
 
 echo ""
