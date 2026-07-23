@@ -33,8 +33,11 @@ func _process(delta: float) -> void:
 	if not _active:
 		return
 	wave_timer += delta
-	# 웨이브 지속 시간 도달 → 다음 웨이브로
-	if wave_timer >= GameConfig.WAVE_DURATION:
+	# 웨이브 지속 시간 도달 → 다음 웨이브로 (첫 웨이브는 초반 단축)
+	var duration := GameConfig.WAVE_DURATION
+	if current_wave == 1:
+		duration = GameConfig.FIRST_WAVE_DURATION
+	if wave_timer >= duration:
 		_advance_wave()
 
 

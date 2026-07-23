@@ -46,7 +46,8 @@ const SCATTER_FRAGMENT_SPEED := 320.0    # 분사 파편 속도
 # ============================================================
 # WAVE / 난이도 곡선
 # ============================================================
-const WAVE_DURATION := 10.0           # 웨이브 지속 시간(초) — 짧게 해 난이도 상승을 빠르게
+const WAVE_DURATION := 20.0           # 웨이브 지속 시간(초)
+const FIRST_WAVE_DURATION := 10.0     # 첫 웨이브(초반 쉬운 구간)만 짧게 — 약 10초로 단축
 const BOSS_WAVE_INTERVAL := 5         # 5의 배수 웨이브 = 보스전
 const DIFFICULTY_BASE := 1.0          # 시작 난이도 배수
 const DIFFICULTY_GROWTH := 0.13       # 웨이브당 난이도 선형 증가율
