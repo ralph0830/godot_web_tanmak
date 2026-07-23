@@ -12,6 +12,7 @@ var is_alive := false               # 게임 시작 전엔 비활성
 
 func _ready() -> void:
 	add_to_group("player")   # Enemy/FieldSpawner 가 플레이어를 찾기 위한 그룹
+	z_index = GameConfig.Z_PLAYER
 	# Area2D 충돌 신호 연결 (탄막 영역/본체 진입 → 피격)
 	area_entered.connect(_on_area_entered)
 	body_entered.connect(_on_body_entered)

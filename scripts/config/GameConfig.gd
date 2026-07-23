@@ -75,6 +75,12 @@ const COLOR_EXPLOSION := Color(1.0, 0.55, 0.20, 0.75)
 const COLOR_JOYSTICK := Color(1.0, 1.0, 1.0, 0.18)
 const COLOR_JOYSTICK_ACTIVE := Color(0.345, 0.651, 1.0, 0.45)
 
+# === Z-Order (그리기 우선순위 — Background 위에 탄막/적/플레이어) ===
+const Z_BACKGROUND := 0
+const Z_BULLET := 10
+const Z_ENEMY := 15
+const Z_PLAYER := 20
+
 
 # ------------------------------------------------------------
 # 웨이브 → 난이도 배수 (선형 곡선, 상한 적용)

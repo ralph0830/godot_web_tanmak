@@ -13,6 +13,7 @@ var _active := false
 
 
 func _ready() -> void:
+	z_index = GameConfig.Z_BULLET   # Background 위에 그려지도록
 	# 충돌 신호 연결 (플레이어 영역 진입)
 	area_entered.connect(_on_area_entered)
 	body_entered.connect(_on_body_entered)

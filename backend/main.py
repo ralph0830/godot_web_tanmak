@@ -46,13 +46,13 @@ class ScoreEntry(BaseModel):
     def validate_name(cls, v: str) -> str:
         """
         이름 검증: 정확히 3자, 한글/영문/숫자만 허용
-        정규식: ^[가-힣A-Za-z0-9]{3}$
+        정규식: ^[A-Za-z0-9]{3}$
         """
         if not isinstance(v, str):
             raise ValueError("이름은 문자열이어야 합니다")
 
         # 정확히 3자인지 확인 (한글/영문/숫자)
-        pattern = r"^[가-힣A-Za-z0-9]{3}$"
+        pattern = r"^[A-Za-z0-9]{3}$"
         if not re.fullmatch(pattern, v):
             raise ValueError(
                 "이름은 정확히 3자여야 하며, 한글/영문/숫자만 허용됩니다"

@@ -1,33 +1,32 @@
 class_name Screens
 extends Control
-## 전체 화면 오버레이 — 메뉴 / 게임오버 / 순위표 / 이름 입력.
-## Main._unhandled_input 이 '아무 데나 탭/R'으로 시작·재시작 처리(이름 입력 중엔 제외).
+## Full-screen overlay — menu / game over / leaderboard / name entry.
+## Main._unhandled_input handles start/restart via tap or R (skipped during name entry).
 
-var _title_label: Label        # "TANMAK"
-var _subtitle_label: Label     # 안내 문구
-var _gameover_label: Label     # "GAME OVER"
-var _score_label: Label        # 최종/최고 점수
-var _congrats_label: Label     # 순위 달성 축하/입력 안내
-var _name_input: LineEdit      # 이름 3자 입력
-var _submit_button: Button     # 등록 버튼
+var _title_label: Label
+var _subtitle_label: Label
+var _gameover_label: Label
+var _score_label: Label
+var _congrats_label: Label
+var _name_input: LineEdit
+var _submit_button: Button
 
 var _final_score := 0
 var _rank_to_submit := 0
 
-var score_client = null        # ScoreClient (Main 이 set_clients 로 연결)
-var leaderboard = null         # Leaderboard
+var score_client = null
+var leaderboard = null
 
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	mouse_filter = Control.MOUSE_FILTER_IGNORE   # 터치는 자식(LineEdit/Button)과 Main이 처리
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_build()
 	EventBus.game_started.connect(func(): hide_all())
 	EventBus.game_over.connect(func(s: int): show_game_over(s))
 	show_menu()
 
 
-# Main 이 게임오버 후 순위 표시를 위해 클라이언트/보드 참조와 시그널을 연결
 func set_clients(client, board) -> void:
 	score_client = client
 	leaderboard = board
@@ -39,26 +38,24 @@ func set_clients(client, board) -> void:
 
 func _build() -> void:
 	_title_label = _make_label("TANMAK", 80, Color(0.345, 0.651, 1.0), 0.30)
-	_subtitle_label = _make_label("화면을 터치하여 시작", 30, Color(0.9, 0.9, 0.9), 0.94)
+	_subtitle_label = _make_label("TAP TO START", 30, Color(0.9, 0.9, 0.9), 0.94)
 	_gameover_label = _make_label("GAME OVER", 56, Color(1.0, 0.32, 0.32), 0.05)
 	_gameover_label.visible = false
 	_score_label = _make_label("", 30, Color(0.9, 0.9, 0.9), 0.11)
 	_score_label.visible = false
 	_congrats_label = _make_label("", 28, Color(1.0, 0.84, 0.0), 0.68)
 	_congrats_label.visible = false
-	# 이름 입력창
 	_name_input = LineEdit.new()
 	_name_input.max_length = GameConfig.NAME_LENGTH
-	_name_input.placeholder_text = "이름 3자"
+	_name_input.placeholder_text = "3 letters"
 	_name_input.add_theme_font_size_override("font_size", 28)
 	_name_input.size = Vector2(260, 52)
 	_name_input.position = Vector2((GameConfig.VIEWPORT_WIDTH - 260) / 2.0, 0.76 * GameConfig.VIEWPORT_HEIGHT)
 	_name_input.visible = false
 	_name_input.text_submitted.connect(_on_name_submitted)
 	add_child(_name_input)
-	# 등록 버튼
 	_submit_button = Button.new()
-	_submit_button.text = "등록"
+	_submit_button.text = "SUBMIT"
 	_submit_button.add_theme_font_size_override("font_size", 26)
 	_submit_button.size = Vector2(160, 52)
 	_submit_button.position = Vector2((GameConfig.VIEWPORT_WIDTH - 160) / 2.0, 0.84 * GameConfig.VIEWPORT_HEIGHT)
@@ -67,7 +64,6 @@ func _build() -> void:
 	add_child(_submit_button)
 
 
-# 세로 비율(ratio) 위치의 중앙 정렬 라벨
 func _make_label(text: String, font_size: int, color: Color, ratio: float) -> Label:
 	var l := Label.new()
 	l.text = text
@@ -82,13 +78,10 @@ func _make_label(text: String, font_size: int, color: Color, ratio: float) -> La
 	return l
 
 
-# ------------------------------------------------------------
-# 게임오버 → 순위 로드 → (갱신 시) 이름 입력 흐름
-# ------------------------------------------------------------
 func show_menu() -> void:
 	_title_label.visible = true
 	_subtitle_label.visible = true
-	_subtitle_label.text = "화면을 터치하여 시작"
+	_subtitle_label.text = "TAP TO START"
 	_gameover_label.visible = false
 	_score_label.visible = false
 	_congrats_label.visible = false
@@ -106,16 +99,15 @@ func show_game_over(final_score: int) -> void:
 	_congrats_label.visible = false
 	_hide_name_input()
 	_subtitle_label.visible = true
-	_subtitle_label.text = "순위 불러오는 중..."
+	_subtitle_label.text = "Loading scores..."
 	if leaderboard:
 		leaderboard.hide_board()
 	if score_client:
 		score_client.fetch_scores()
 	else:
-		_subtitle_label.text = "화면을 터치하여 재시작"
+		_subtitle_label.text = "TAP TO RESTART"
 
 
-# 순위 수신 → 표시 + 갱신(10위 내) 판단
 func _on_scores_received(scores: Array) -> void:
 	if leaderboard:
 		leaderboard.display(scores)
@@ -123,10 +115,9 @@ func _on_scores_received(scores: Array) -> void:
 	if _rank_to_submit >= 1 and _rank_to_submit <= GameConfig.LEADERBOARD_SIZE:
 		_show_congrats(_rank_to_submit)
 	else:
-		_subtitle_label.text = "화면을 터치하여 재시작"
+		_subtitle_label.text = "TAP TO RESTART"
 
 
-# 점수가 들어갈 순위(1-base) 계산, 10위 밖이면 0
 func _compute_rank(scores: Array, score: int) -> int:
 	var rank := 1
 	for entry in scores:
@@ -139,17 +130,16 @@ func _compute_rank(scores: Array, score: int) -> int:
 
 
 func _show_congrats(rank: int) -> void:
-	_congrats_label.text = "축하드립니다!! %d위 달성!\n이름을 입력해 주세요" % rank
+	_congrats_label.text = "CONGRATULATIONS!!\n%d PLACE — Enter your name" % rank
 	_congrats_label.visible = true
 	_name_input.visible = true
 	_name_input.editable = true
 	_name_input.text = ""
 	_name_input.grab_focus()
 	_submit_button.visible = true
-	_subtitle_label.text = "이름 3자 입력 후 등록"
+	_subtitle_label.text = "Type 3 letters, then SUBMIT"
 
 
-# 이름 제출(엔터 또는 버튼)
 func _on_name_submitted(text: String) -> void:
 	_submit(text)
 
@@ -158,9 +148,8 @@ func _on_submit_pressed() -> void:
 
 func _submit(player_name: String) -> void:
 	player_name = player_name.strip_edges()
-	# 정확히 3자 검증
 	if player_name.length() != GameConfig.NAME_LENGTH:
-		_congrats_label.text = "정확히 %d자(한글/영문/숫자)만 입력!" % GameConfig.NAME_LENGTH
+		_congrats_label.text = "Enter exactly %d letters (A-Z 0-9)!" % GameConfig.NAME_LENGTH
 		return
 	if score_client:
 		_name_input.editable = false
@@ -168,20 +157,19 @@ func _submit(player_name: String) -> void:
 		score_client.submit_score(player_name, _final_score)
 
 
-# 제출 완료 → 갱신 순위 표시
 func _on_submitted(rank: int, scores: Array) -> void:
 	if leaderboard:
 		leaderboard.display(scores)
 	_hide_name_input()
-	_congrats_label.text = "%d위 등록 완료!" % rank
+	_congrats_label.text = "Saved %d place!" % rank
 	_congrats_label.visible = true
-	_subtitle_label.text = "화면을 터치하여 재시작"
+	_subtitle_label.text = "TAP TO RESTART"
 
 
 func _on_request_failed(reason: String) -> void:
 	_hide_name_input()
 	_congrats_label.visible = false
-	_subtitle_label.text = "순위 로드 실패 — 터치하여 재시작"
+	_subtitle_label.text = "Load failed — tap to restart"
 	if leaderboard:
 		leaderboard.hide_board()
 
@@ -193,7 +181,6 @@ func _hide_name_input() -> void:
 	_submit_button.disabled = false
 
 
-# 이름 입력 중인지 — Main 이 재시작 입력 무시 판단용
 func is_entering_name() -> bool:
 	return _name_input.visible
 

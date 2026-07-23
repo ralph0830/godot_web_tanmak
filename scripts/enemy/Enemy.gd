@@ -10,6 +10,7 @@ var _center := Vector2.ZERO
 
 
 func _ready() -> void:
+	z_index = GameConfig.Z_ENEMY
 	_center = Vector2(GameConfig.VIEWPORT_WIDTH / 2.0, GameConfig.VIEWPORT_HEIGHT * 0.22)
 	position = _center
 	visible = false

@@ -1,5 +1,6 @@
-extends Node
+extends Node2D
 ## BulletPool (싱글톤) — 탄막 객체 풀링으로 웹 성능 확보.
+## Node2D 여야 자식 Area2D(탄막)가 화면에 그려진다.
 ## instantiate/free 반복 대신 visible/process 토글로 객체를 재사용한다.
 
 const CircleScene := preload("res://scenes/bullets/BulletCircle.tscn")
