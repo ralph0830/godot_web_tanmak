@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bmain01tanmak"]
+[gd_scene load_steps=10 format=3 uid="uid://bmain01tanmak"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/player/Player.tscn" id="2_player"]
@@ -7,6 +7,8 @@
 [ext_resource type="Script" path="res://scripts/ui/HUD.gd" id="5_hud"]
 [ext_resource type="Script" path="res://scripts/player/VirtualJoystick.gd" id="6_joy"]
 [ext_resource type="Script" path="res://scripts/ui/Screens.gd" id="7_screens"]
+[ext_resource type="Script" path="res://scripts/ui/Leaderboard.gd" id="8_leader"]
+[ext_resource type="Script" path="res://scripts/core/ScoreClient.gd" id="9_score"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -34,12 +36,12 @@ anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("5_hud")
 
-[node name="Joystick" type="Control" parent="UI"]
+[node name="Leaderboard" type="Control" parent="UI"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-script = ExtResource("6_joy")
+script = ExtResource("8_leader")
 
 [node name="Screens" type="Control" parent="UI"]
 anchors_preset = 15
@@ -47,3 +49,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("7_screens")
+
+[node name="Joystick" type="Control" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("6_joy")
+
+[node name="ScoreClient" type="Node" parent="UI"]
+script = ExtResource("9_score")

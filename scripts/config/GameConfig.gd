@@ -59,6 +59,11 @@ const MAX_DIFFICULTY := 4.0           # 난이도 상한 (무한 증가 방지)
 const SCORE_PER_SECOND := 10          # 생존 초당 점수
 const SCORE_PER_WAVE := 500           # 웨이브 통과 보너스
 
+# === 순위표 (오락실 스타일) ===
+const LEADERBOARD_SIZE := 10          # 순위 표시 개수
+const NAME_LENGTH := 3                # 이름 글자 수 (정확히 3자)
+const SCORE_API_PATH := "/api/scores" # 순위 API 경로 (same-origin)
+
 # ============================================================
 # 색상 팔레트
 # ============================================================

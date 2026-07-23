@@ -32,6 +32,7 @@ func _on_acquire() -> void:
 	_active = true
 	_lifetime = 0.0
 	_reset()
+	queue_redraw()   # _draw() 즉시 1회 실행 (활성화 직후 표시)
 
 
 # 풀 반납(비활성화) — BulletPool.release 가 호출
@@ -55,6 +56,7 @@ func _physics_process(delta: float) -> void:
 	_lifetime += delta
 	position += velocity * delta
 	_tick(delta)
+	queue_redraw()   # 위치/상태 갱신마다 _draw() 재실행 (탄막 표시)
 	# 수명 초과 또는 화면 밖(여유 폭 포함)이면 자동 제거
 	if _lifetime > GameConfig.BULLET_LIFETIME or _is_out_of_bounds():
 		_despawn()

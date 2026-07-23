@@ -69,6 +69,12 @@ echo "==> 1/3 Godot 웹 빌드 (preset: ${GODOT_EXPORT_PRESET})"
 mkdir -p "${PROJECT_DIR}/web"
 "${GODOT}" --headless --export-release "${GODOT_EXPORT_PRESET}" "${GODOT_EXPORT_OUTPUT}" --path "${PROJECT_DIR}"
 
+# 회색 여백 제거 — Godot 웹 셸의 body 배경을 게임 배경색(#0b0e16)으로 통일
+INDEX_HTML="${PROJECT_DIR}/web/index.html"
+if [ -f "$INDEX_HTML" ]; then
+	sed -i 's|</head>|<style>html,body{background:#0b0e16;margin:0;padding:0;overflow:hidden;}#canvas{display:block;}</style></head>|' "$INDEX_HTML" && echo "   회색 여백 제거 적용(body 배경 → #0b0e16)"
+fi
+
 echo "==> 2/3 서버 업로드 (rsync over SSH, 포트 ${DEPLOY_PORT} → ${WEB_ROOT})"
 if command -v rsync >/dev/null 2>&1; then
 	rsync -avz --delete -e "${SSH_BASE}" "${PROJECT_DIR}/web/" "${DEPLOY_USER}@${DEPLOY_HOST}:${WEB_ROOT}/"

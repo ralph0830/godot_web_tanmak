@@ -1,0 +1,32 @@
+# ============================================================
+# TANMAK Leaderboard API - systemd 서비스 단위
+# ------------------------------------------------------------
+# FastAPI 백엔드를 시스템 서비스로 실행하는 설정
+#
+# 설치(우분투 서버에서 1회):
+#   sudo cp deploy/tanmak-api.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable tanmak-api
+#   sudo systemctl start tanmak-api
+#   sudo systemctl status tanmak-api
+# ============================================================
+
+[Unit]
+Description=TANMAK leaderboard API
+After=network.target
+
+[Service]
+Type=simple
+User=ralph
+WorkingDirectory=/home/ralph/work/web/tanmak-api
+ExecStart=/home/ralph/.local/bin/uv run uvicorn main:app --host 127.0.0.1 --port 2715
+Environment=SCORES_FILE=/home/ralph/work/web/tanmak-scores/scores.json
+Restart=on-failure
+RestartSec=5
+
+# 보안 강화
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
