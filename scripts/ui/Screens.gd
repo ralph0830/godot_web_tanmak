@@ -1,18 +1,20 @@
 class_name Screens
 extends Control
 ## Full-screen overlay — menu / game over / leaderboard / name entry.
-## Main._unhandled_input handles start/restart via tap or R (skipped during name entry).
+## 이름 입력: 웹(카톡 인앱 브라우저 포함)은 HTML <input> 네이티브 키보드,
+##            데스크탑/에디터는 Godot LineEdit 사용.
 
 var _title_label: Label
 var _subtitle_label: Label
 var _gameover_label: Label
 var _score_label: Label
 var _congrats_label: Label
-var _name_input: LineEdit
-var _submit_button: Button
+var _name_input: LineEdit        # 데스크탑용
+var _submit_button: Button       # 데스크탑용
 
 var _final_score := 0
 var _rank_to_submit := 0
+var _waiting_name := false       # 웹 HTML 입력 대기 중
 
 var score_client = null
 var leaderboard = null
@@ -34,7 +36,6 @@ func set_clients(client, board) -> void:
 		score_client.scores_received.connect(_on_scores_received)
 		score_client.submitted.connect(_on_submitted)
 		score_client.request_failed.connect(_on_request_failed)
-		# 초기 타이틀 화면 순위 로드
 		score_client.fetch_scores()
 
 
@@ -66,6 +67,16 @@ func _build() -> void:
 	add_child(_submit_button)
 
 
+# 웹에서 HTML 입력 완료(엔터) 값을 매 프레임 폴링
+func _process(_delta: float) -> void:
+	if _waiting_name and OS.has_feature("web"):
+		var v: Variant = JavaScriptBridge.eval("window._tanmakNameSubmitted", true)
+		if v is String and (v as String) != "":
+			JavaScriptBridge.eval("window._tanmakNameSubmitted=''", true)
+			_waiting_name = false
+			_submit(v)
+
+
 func _make_label(text: String, font_size: int, color: Color, ratio: float) -> Label:
 	var l := Label.new()
 	l.text = text
@@ -88,7 +99,6 @@ func show_menu() -> void:
 	_score_label.visible = false
 	_congrats_label.visible = false
 	_hide_name_input()
-	# 순위표는 set_clients() 의 fetch 결과로 표시됨 (여기서 숨기지 않음)
 
 
 func show_game_over(final_score: int) -> void:
@@ -112,7 +122,6 @@ func show_game_over(final_score: int) -> void:
 func _on_scores_received(scores: Array) -> void:
 	if leaderboard:
 		leaderboard.display(scores)
-	# 타이틀(메뉴) 상태에서는 순위 표시만 하고 갱신 판단/축하는 생략
 	if GameManager.current_state != GameManager.State.GAME_OVER:
 		return
 	_rank_to_submit = _compute_rank(scores, _final_score)
@@ -136,12 +145,18 @@ func _compute_rank(scores: Array, score: int) -> int:
 func _show_congrats(rank: int) -> void:
 	_congrats_label.text = "CONGRATULATIONS!!\n%d PLACE — Enter your name" % rank
 	_congrats_label.visible = true
-	_name_input.visible = true
-	_name_input.editable = true
-	_name_input.text = ""
-	_name_input.grab_focus()
-	_submit_button.visible = true
-	_subtitle_label.text = "Type 3 letters, then SUBMIT"
+	_subtitle_label.text = "Type 3 letters, then Enter"
+	if OS.has_feature("web"):
+		# 웹: HTML <input> 표시 (모바일/카톡 네이티브 키보드)
+		_waiting_name = true
+		JavaScriptBridge.eval("showTanmakNameInput()", true)
+	else:
+		# 데스크탑/에디터: Godot LineEdit
+		_name_input.visible = true
+		_name_input.editable = true
+		_name_input.text = ""
+		_name_input.grab_focus()
+		_submit_button.visible = true
 
 
 func _on_name_submitted(text: String) -> void:
@@ -154,10 +169,14 @@ func _submit(player_name: String) -> void:
 	player_name = player_name.strip_edges()
 	if player_name.length() != GameConfig.NAME_LENGTH:
 		_congrats_label.text = "Enter exactly %d letters (A-Z 0-9)!" % GameConfig.NAME_LENGTH
+		# 웹에서 재입력 유도
+		if OS.has_feature("web"):
+			_waiting_name = true
+			JavaScriptBridge.eval("window._tanmakNameSubmitted=''", true)
+			JavaScriptBridge.eval("showTanmakNameInput()", true)
 		return
+	_hide_name_input()
 	if score_client:
-		_name_input.editable = false
-		_submit_button.disabled = true
 		score_client.submit_score(player_name, _final_score)
 
 
@@ -173,7 +192,6 @@ func _on_submitted(rank: int, scores: Array) -> void:
 func _on_request_failed(reason: String) -> void:
 	_hide_name_input()
 	_congrats_label.visible = false
-	# 메뉴 상태가 아니면(게임오버) 안내 문구 변경
 	if GameManager.current_state == GameManager.State.GAME_OVER:
 		_subtitle_label.text = "Load failed — tap to restart"
 	if leaderboard and GameManager.current_state == GameManager.State.GAME_OVER:
@@ -181,14 +199,17 @@ func _on_request_failed(reason: String) -> void:
 
 
 func _hide_name_input() -> void:
+	_waiting_name = false
 	_name_input.visible = false
 	_name_input.editable = false
 	_submit_button.visible = false
 	_submit_button.disabled = false
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("hideTanmakNameInput()", true)
 
 
 func is_entering_name() -> bool:
-	return _name_input.visible
+	return _waiting_name or _name_input.visible
 
 
 func hide_all() -> void:

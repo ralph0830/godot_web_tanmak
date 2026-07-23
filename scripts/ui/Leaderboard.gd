@@ -18,8 +18,14 @@ func _build_rows() -> void:
 		row.add_theme_font_size_override("font_size", 38)
 		row.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		row.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		row.set_anchors_preset(Control.PRESET_FULL_RECT)
-		# 10행을 상단(200px)부터 하단까지 넓은 간격으로 골고루 배치
+		# 가로 전체 / 세로는 top 기준 절대 위치 (FULL_RECT 쓰면 bottom anchor 로 행이 늘어남)
+		row.anchor_left = 0.0
+		row.anchor_top = 0.0
+		row.anchor_right = 1.0
+		row.anchor_bottom = 0.0
+		row.offset_left = 0.0
+		row.offset_right = 0.0
+		# 10행을 TANMAK 타이틀 아래(200px)부터 넓은 간격으로 배치
 		var top: float = 200.0 + i * 64.0
 		row.offset_top = top
 		row.offset_bottom = top + 54.0

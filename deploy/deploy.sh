@@ -69,10 +69,36 @@ echo "==> 1/3 Godot 웹 빌드 (preset: ${GODOT_EXPORT_PRESET})"
 mkdir -p "${PROJECT_DIR}/web"
 "${GODOT}" --headless --export-release "${GODOT_EXPORT_PRESET}" "${GODOT_EXPORT_OUTPUT}" --path "${PROJECT_DIR}"
 
-# 회색 여백 제거 — Godot 웹 셸의 body 배경을 게임 배경색(#0b0e16)으로 통일
+# 회색 여백 제거 + 모바일(카톡 인앱 브라우저 포함) 네이티브 키보드용 HTML 입력창 주입
 INDEX_HTML="${PROJECT_DIR}/web/index.html"
 if [ -f "$INDEX_HTML" ]; then
-	sed -i 's|</head>|<style>html,body{background:#0b0e16;margin:0;padding:0;overflow:hidden;}#canvas{display:block;}</style></head>|' "$INDEX_HTML" && echo "   회색 여백 제거 적용(body 배경 → #0b0e16)"
+	# 1) body 배경을 게임색(#0b0e16)으로 통일 (회색 여백 제거)
+	sed -i 's|</head>|<style>html,body{background:#0b0e16;margin:0;padding:0;overflow:hidden;}#canvas{display:block;}</style></head>|' "$INDEX_HTML"
+	# 2) HTML 이름 입력창 + JS — Godot LineEdit 가상키보드 미지원 환경(카톡 WebView 등) 대응
+	python3 - "$INDEX_HTML" <<'PYEOF'
+import sys
+p = sys.argv[1]
+h = open(p, encoding='utf-8').read()
+if 'tanmak-name' not in h:
+    inj = (
+        '<input id="tanmak-name" type="text" maxlength="3" autocomplete="off" '
+        'autocapitalize="off" spellcheck="false" inputmode="text" '
+        'style="position:fixed;left:50%;top:62%;transform:translateX(-50%);width:240px;'
+        'height:56px;font-size:30px;text-align:center;background:#1a2030;color:#fff;'
+        'border:2px solid #58a6ff;border-radius:10px;display:none;z-index:50;" '
+        "onkeydown=\"if(event.key==='Enter'){window._tanmakNameSubmitted=this.value;}\">"
+        '<script>'
+        'window._tanmakNameSubmitted="";'
+        "function showTanmakNameInput(){var i=document.getElementById('tanmak-name');"
+        "i.style.display='block';i.value='';i.focus();i.click();"
+        "setTimeout(function(){i.focus();i.click();},100);}"
+        "function hideTanmakNameInput(){document.getElementById('tanmak-name').style.display='none';}"
+        '</script>'
+    )
+    h = h.replace('</body>', inj + '</body>', 1)
+    open(p, 'w', encoding='utf-8').write(h)
+    print('   모바일 이름 입력창(HTML 네이티브 키보드) 주입')
+PYEOF
 fi
 
 echo "==> 2/3 서버 업로드 (rsync over SSH, 포트 ${DEPLOY_PORT} → ${WEB_ROOT})"
